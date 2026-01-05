@@ -14,15 +14,64 @@
 <head>
 	<title>HTMLt</title>
 	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
 
 	<script src="https://code.jquery.com/jquery-2.1.3.min.js"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 	<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
 
 	<link href="HTMLt.css" rel="stylesheet">
+	<style>
+		/* 加载动画样式 */
+		.loading-overlay {
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			z-index: 9999;
+			transition: opacity 0.5s ease;
+		}
+		.loading-overlay.hidden {
+			opacity: 0;
+			pointer-events: none;
+		}
+		.loading-content {
+			text-align: center;
+			color: white;
+		}
+		.spinner {
+			width: 60px;
+			height: 60px;
+			border: 4px solid rgba(255,255,255,0.3);
+			border-top: 4px solid white;
+			border-radius: 50%;
+			animation: spin 1s linear infinite;
+			margin: 0 auto 20px;
+		}
+		@keyframes spin {
+			0% { transform: rotate(0deg); }
+			100% { transform: rotate(360deg); }
+		}
+		.loading-text {
+			font-size: 18px;
+			font-weight: 300;
+			letter-spacing: 2px;
+		}
+	</style>
 </head>
 <body>
+
+<div class="loading-overlay" id="loadingOverlay">
+	<div class="loading-content">
+		<div class="spinner"></div>
+		<div class="loading-text">加载游戏中...</div>
+	</div>
+</div>
 
 <div class="wrapper" id="mainarea">
 	<div class="alert alert-warning centered-axis-xy" style="min-height: 20px; display:none;" role="alert" id="compilingmessage">
@@ -31,7 +80,7 @@
 	<!-- The "tabindex=0" specifier on the canvas is important to allow it to capture keyboard focus when clicking on it with a mouse -->
 	<canvas tabindex=0 id="canvas" class="emscripten" oncontextmenu="event.preventDefault()" style="display:none;">
 </div>
-<div class="row buttonarea text-center" id="buttonrow">
+<div class="row buttonarea text-center" id="buttonrow" style="display:none;">
 	<div class="col-sm-2 text-center"></div>
 	<div class="col-sm-2 text-center"><button type="button" class="btn btn-primary" onclick="try { Module['pauseMainLoop'](); } catch(e) {console.error(e);}">Pause</button></div>
 	<div class="col-sm-2 text-center"><button type="button" class="btn btn-primary" onclick="try { Module['resumeMainLoop'](); } catch(e) {console.error(e);}">Resume</button></div>
@@ -44,5 +93,13 @@
 <div class="texthalf text-normal jumbotron " id="logwindow" style='display:none'></div>
 
 <script src="HTMLt.UE4.js"></script>
+<script>
+	// 游戏加载完成时隐藏加载屏幕
+	window.addEventListener('load', function() {
+		setTimeout(function() {
+			document.getElementById('loadingOverlay').classList.add('hidden');
+		}, 500);
+	});
+</script>
 </body>
 </html>
